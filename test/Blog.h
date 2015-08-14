@@ -1,6 +1,9 @@
 #ifndef _BLOG_H_
 #define _BLOG_H_
 
+#include "head.h"
+#include "text.h"
+
 struct Blog{
 	string userId;
 	string blogId;
@@ -8,7 +11,7 @@ struct Blog{
 	int forward;
 	int comment;
 	int like;
-	string text;
+	Text text;
 
 	Blog(){}
 	Blog(int forward, int comment, int like):
@@ -46,7 +49,7 @@ struct Blog{
 				else if (idx==1) blogId = string(buf);
 				else if (idx==2){ 
 					date = string(buf);
-					text = s+i+1;
+					text = Text(string(s+i+1));
 					break;
 				}
 
@@ -74,7 +77,7 @@ struct Blog{
 				else if (idx==4) comment = atoi(buf);
 				else if (idx==5){
 					like = atoi(buf);
-					text = s+i+1;
+					text = Text(string(s+i+1));
 					break;
 				}
 

@@ -2,6 +2,11 @@
 train = read.csv("train.out");
 test = read.csv("test.out");
 
+train = train[train$forward<100,]
+train = train[train$comment<100,]
+train = train[train$like<100,]
+
+
 attach(train)
 lineF = lm(forward~cnt+userForward+userComment+userLike+text)
 lineC = lm(comment~cnt+userForward+userComment+userLike+text)
@@ -17,7 +22,5 @@ f[f<0] = 0
 c[c<0] = 0
 l[l<0] = 0
 
-delta = data.frame(f, c, l) 
-	- data.frame(test$forward, test$comment, test$like);
-evaluate  = sum(abs(delta))
+evaluate = sum(abs(f-test$forward)) + sum(abs(c-test$comment))	+ sum(abs(l-test$like))
 
