@@ -1,47 +1,41 @@
 #!/usr/bin/env Rscript
 train = read.csv("train.out");
-test = read.csv("test.out");
 
-train = train[train$forward<100,]
-train = train[train$comment<100,]
-train = train[train$like<100,]
-
-test= test[test$forward<100,]
-test= test[test$comment<100,]
-test= test[test$like<100,]
 
 attach(train)
-lineF = lm(forward~
-		cnt
-		+log(userForward+1)
-		+poly(userForward,2)
-		+poly(userComment,2) + poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,1))
-lineC = lm(comment~
-		poly(cnt,2)
-		+poly(userForward,2)
-		+log(userComment+1)
-		+poly(userComment,2) 
-		+poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,2))
-lineL = lm(like~
-		cnt
-		+poly(userForward,2)
-		+poly(userComment,2) 
-		+log(userLike+1)
-		+poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,2))
+lineF = lm(forward~.-comment-like, train);
+lineC = lm(comment~.-forward-like, train);
+lineL = lm(like~.-forward-comment, train);
 
+test = read.csv("test.out");
 
-data = test[, 1:7]
-
-f = round( predict(lineF, data) )
-c = round( predict(lineC, data) )
-l = round( predict(lineL, data) )
+f = round(predict(lineF, test));
+c = round(predict(lineC, test));
+l = round(predict(lineL, test));
 
 f[f<0] = 0
 c[c<0] = 0
 l[l<0] = 0
 
-evaluate = sum(abs(f-test$forward)) + sum(abs(c-test$comment))+ sum(abs(l-test$like))
+f[test$userForward+test$userComment+test$userLike==0] = 0
+c[test$userForward+test$userComment+test$userLike==0] = 0
+l[test$userForward+test$userComment+test$userLike==0] = 0
 
+df = abs(f-test$forward)/(test$forward+5)
+dc = abs(c-test$comment)/(test$comment+3)
+dl = abs(l-test$like)/(test$like+3)
+
+prec = 1-0.5*df-0.25*dc-0.25*dl
+
+count = test$forward+test$comment+test$like
+count[count>100]=100
+
+sgn=function(prec){
+	ret=1:length(prec)
+	ret[prec<=0]=0
+	ret[prec>0]=1
+	return(ret)
+}
+
+eval = sum((count+1)*sgn(prec-0.8))/sum(count+1)
+eval

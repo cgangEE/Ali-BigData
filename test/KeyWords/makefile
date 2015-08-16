@@ -1,3 +1,6 @@
+keyWord.out: getKeyWords
+	./getKeyWords > keyWord.out
+
 getKeyWords: getKeyWords.cpp
 	g++ getKeyWords.cpp -o getKeyWords
 

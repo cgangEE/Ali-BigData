@@ -11,6 +11,7 @@ struct Text{
 	Text(){}
 	Text(string s);
 	void debug();
+	int getCnt(string p);
 };
 
 #endif

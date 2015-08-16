@@ -31,6 +31,9 @@ struct C{
 			&& (unsigned char) s[0]!=0xe3
 			&& (unsigned char) s[0]!=0xef;
 	}
+	void out()const{
+		rep(i, len) putchar(s[i]);
+	}
 };
 
 #endif
