@@ -2,12 +2,35 @@
 train = read.csv("train.out");
 test = read.csv("test.out");
 
-attach(train)
-lineF = lm(forward~cnt+userForward+userComment+userLike+text)
-lineC = lm(comment~cnt+userForward+userComment+userLike+text)
-lineL = lm(like~cnt+userForward+userComment+userLike+text)
+train = train[train$forward<100,]
+train = train[train$comment<100,]
+train = train[train$like<100,]
 
-data = test[, 1:5]
+attach(train)
+lineF = lm(forward~
+		cnt
+		+log(userForward+1)
+		+poly(userForward,2)
+		+poly(userComment,2) + poly(userLike,2)
+		+poly(text,2)+poly(http,2)+poly(face,1))
+lineC = lm(comment~
+		poly(cnt,2)
+		+poly(userForward,2)
+		+log(userComment+1)
+		+poly(userComment,2) 
+		+poly(userLike,2)
+		+poly(text,2)+poly(http,2)+poly(face,2))
+lineL = lm(like~
+		cnt
+		+poly(userForward,2)
+		+poly(userComment,2) 
+		+log(userLike+1)
+		+poly(userLike,2)
+		+poly(text,2)+poly(http,2)+poly(face,2))
+
+
+data = test[, 1:7]
+
 
 f = round( predict(lineF, data) )
 c = round( predict(lineC, data) )

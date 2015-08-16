@@ -54,6 +54,13 @@ void readTest(){
 }
 
 void readTrain(){
+	string fTextName = "chinese.out";
+	FILE *fText = fopen(fTextName.c_str(), "w");
+	if (fText == NULL){
+		fprintf(stderr, "open file<%s> failed\n", fTextName.c_str());
+		return;
+	}
+
 	FILE *file = fopen(inputData, "r");
 	if (file==NULL){
 		fprintf(stderr, "open file<%s> failed\n", inputData);
@@ -87,6 +94,7 @@ void readTrain(){
 			stringToId[blog.userId] = userIdx;
 		}
 		userBlog[userIdx].push_back(blog);
+		fprintf(fText, "%s", blog.text.s.c_str());
 	}
 
 	// get statics for each users
@@ -105,6 +113,7 @@ void readTrain(){
 			stringToId[blog.userId] = userIdx;
 		}
 		userBlog[userIdx].push_back(blog);
+		fprintf(fText, "%s", blog.text.s.c_str());
 	}
 
 	// output features of each train data

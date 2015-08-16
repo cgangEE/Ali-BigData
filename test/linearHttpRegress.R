@@ -6,6 +6,10 @@ train = train[train$forward<100,]
 train = train[train$comment<100,]
 train = train[train$like<100,]
 
+test= test[test$forward<100,]
+test= test[test$comment<100,]
+test= test[test$like<100,]
+
 attach(train)
 lineF = lm(forward~
 		cnt

@@ -18,8 +18,6 @@
 #define repf(i, a, b) for (int i=(a); i<=(b); ++i)
 #define repd(i, a, b) for (int i=(a); i>=(b); --i)
 #define sz(a) ((int)(a).size())
-#define iter(v) __typeof((v).begin())
-#define foreach(it, v) for (iter(v) it = (v).begin(); it != (v).end(); it++)
 
 using namespace std;
 

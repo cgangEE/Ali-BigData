@@ -31,11 +31,21 @@ struct C{
 	}
 };
 
+typedef vector<C> sentence;
+vector<sentence> stcs;
+map<C, int> freq;
 
-void cutSentence(vector<C> &stc){
-	rep(i, sz(stc)) cout<<stc[i].s;
-	if (sz(stc)) cout<<endl;
+void saveSentence(vector<C> &stc){
+	rep(i, sz(stc)) ++freq[stc[i]];	
+	stcs.push_back(stc);
 	stc.clear();
+}
+
+void cutSentence(){
+	rep(i, sz(stcs)){
+		sentence &stc = stcs[i];
+		
+	}
 }
 
 void getKeyWords(){
@@ -50,14 +60,13 @@ void getKeyWords(){
 
 	while (fgets(buf, BUF_SIZE, file)){
 		int len = strlen(buf);
-		cout<<endl<<buf;
 		rep(i, len){
 			if (buf[i]&(1<<7)){
 				if ((buf[i]>>6)==-1 && c.len>0){
 					if (c.isChinese()){
 						stc.push_back(c);
 					} else {
-						cutSentence(stc);
+						saveSentence(stc);
 					}
 					c.clear();
 				}
@@ -66,15 +75,19 @@ void getKeyWords(){
 			else{
 				if (c.isChinese())
 					stc.push_back(c);
-				cutSentence(stc);
+				saveSentence(stc);
 				c.clear();
 			}
 		}
 
 	}
+	fclose(file);
+
+	cutSentence();
 }
 
 
 int main(){
 	getKeyWords();
 }
+

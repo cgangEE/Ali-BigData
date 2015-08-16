@@ -1,28 +1,13 @@
-#include <iostream>
-#include <algorithm>
-#include <map>
-#include <vector>
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cmath>
-
-using namespace std;
-
-#define rep(i, n) for (int i=0; i<(n); ++i)
-#define repf(i, a, b) for (int i=(a); i<=(b); ++i)
-#define repd(i, a, b) for (int i=(a); i>=(b); --i)
-#define sz(a) ((int)(a).size())
-
-#define trainData "weibo_train_data.txt"
-#define testData "weibo_predict_data.txt"
+#define trainData "train.txt"
+#define testData "predict.txt"
 
 #define inputData trainData
 #define BUF_SIZE 100000
 
-#include "Blog.h"
 #define N 50000
+
+#include "head.h"
+#include "Blog.h"
 
 char buf[BUF_SIZE];
 
@@ -35,11 +20,6 @@ vector<Blog> test;
 map<string, int> stringToId;
 
 void readTest(){
-	FILE *file = fopen(testData, "r");
-	if (file==NULL){
-		fprintf(stderr, "open file<%s> failed\n", testData);
-		return;
-	}
 
 	
 	FILE *foutput = fopen("test.out", "w");
@@ -49,25 +29,26 @@ void readTest(){
 	}
 
 
-	fprintf(foutput, "cnt,userForward,userComment,userLike,text,userId,blogId,date\n");
-	while (fgets(buf, BUF_SIZE, file)){
-		Blog blog(buf, true);
+	fprintf(foutput, "cnt,userForward,userComment,userLike,text,http,face,userId,blogId,date\n");
+	rep(i, sz(test)){
+		Blog &blog = test[i];
 		int idx = stringToId[blog.userId];
 		int cnt = sz(userBlog[idx]);
 		Blog &stat = statics[idx];
-		fprintf(foutput, "%d,%.8lf,%.8lf,%.8lf,%d,%s,%s,%s\n",
+		fprintf(foutput, "%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%s,%s,%s\n",
 				cnt,
-				cnt==0?0.:stat.forward*1./cnt,
-				cnt==0?0.:stat.comment*1./cnt,
-				cnt==0?0.:stat.like*1./cnt,
-				sz(blog.text),
+				stat.forward*1./cnt,
+				stat.comment*1./cnt,
+				stat.like*1./cnt,
+				blog.text.len,
+				blog.text.http,
+				blog.text.face,
 				blog.userId.c_str(),
 				blog.blogId.c_str(),
 				blog.date.c_str()
 				);
 	}
 
-	fclose(file);
 	fclose(foutput);
 }
 
@@ -88,10 +69,7 @@ void readTrain(){
 
 	while (fgets(buf, BUF_SIZE, file)){
 		Blog blog(buf);
-		if (rand()%100<=100)
-			train.push_back(blog);
-		else
-			test.push_back(blog);
+		train.push_back(blog);
 	}
 	fclose(file);
 
@@ -114,16 +92,38 @@ void readTrain(){
 			statics[i] = statics[i] + userBlog[i][j];
 	}
 
+	// read test data
+
+	FILE *fTest = fopen(testData, "r");
+	if (fTest == NULL){
+		fprintf(stderr, "open file<%s> failed\n", testData);
+		return;
+	}
+
+
+	while (fgets(buf, BUF_SIZE, fTest)){
+		Blog blog(buf, true);
+		int userIdx = stringToId[blog.userId];
+		if (userIdx == 0){
+			userIdx = ++idx;
+			stringToId[blog.userId] = userIdx;
+		}
+		userBlog[userIdx].push_back(blog);
+		test.push_back(blog);
+	}
+
+	fclose(fTest);
+
 	// output features of each train data
 
-	fprintf(foutput, "cnt,userForward,userComment,userLike,forward,comment,like,text\n");
+	fprintf(foutput, "cnt,userForward,userComment,userLike,forward,comment,like,text,http,face\n");
 	rep(i, sz(train)){
 		Blog &blog = train[i];
 		int userIdx = stringToId[blog.userId];
 		Blog &stat = statics[userIdx];
 		int cnt = userBlog[userIdx].size();
 
-		fprintf(foutput, "%d,%.8lf,%.8lf,%8lf,%d,%d,%d,%d\n", 
+		fprintf(foutput, "%d,%.8lf,%.8lf,%8lf,%d,%d,%d,%d,%d,%d\n", 
 				cnt,
 				stat.forward*1./cnt,
 				stat.comment*1./cnt,
@@ -131,7 +131,9 @@ void readTrain(){
 				blog.forward,
 				blog.comment,
 				blog.like,
-				(int) blog.text.size());
+				blog.text.len,
+				blog.text.http,
+				blog.text.face);
 	}
 	fclose(foutput);
 }
