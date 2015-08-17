@@ -3,9 +3,12 @@ train = read.csv("train.out");
 
 
 attach(train)
-lineF = lm(forward~.-comment-like, train);
-lineC = lm(comment~.-forward-like, train);
-lineL = lm(like~.-forward-comment, train);
+
+train = train[train$userForward+train$userComment+train$userLike!=0,]
+
+lineF = lm(forward~.-comment-like-uid, train);
+lineC = lm(comment~.-forward-like-uid, train);
+lineL = lm(like~.-forward-comment-uid, train);
 
 test = read.csv("test.out");
 
@@ -38,4 +41,4 @@ sgn=function(prec){
 }
 
 eval = sum((count+1)*sgn(prec-0.8))/sum(count+1)
-eval
+print(eval)

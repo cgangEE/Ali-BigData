@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 train = read.csv("train.out");
 
+train = train[train$userForward+train$userComment+train$userLike!=0,]
 
 attach(train)
 lineF = lm(forward~cnt+userForward+userComment+userLike+text, train);
@@ -38,4 +39,4 @@ sgn=function(prec){
 }
 
 eval = sum((count+1)*sgn(prec-0.8))/sum(count+1)
-eval
+print(eval)
