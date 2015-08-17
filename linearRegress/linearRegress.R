@@ -1,44 +1,58 @@
 #!/usr/bin/env Rscript
+user = read.csv("user.out")
+user = user[,-1]
+
+for (i in 1:3){
+	user[,i] = user[,i] / max(user[,i])
+}
+
+center = 4
+cl = kmeans(user, center)
+
+
 train = read.csv("train.out");
 test = read.csv("test.out");
 
-train = train[train$forward<100,]
-train = train[train$comment<100,]
-train = train[train$like<100,]
-
 attach(train)
-lineF = lm(forward~
-		cnt
-		+log(userForward+1)
-		+poly(userForward,2)
-		+poly(userComment,2) + poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,1))
-lineC = lm(comment~
-		poly(cnt,2)
-		+poly(userForward,2)
-		+log(userComment+1)
-		+poly(userComment,2) 
-		+poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,2))
-lineL = lm(like~
-		cnt
-		+poly(userForward,2)
-		+poly(userComment,2) 
-		+log(userLike+1)
-		+poly(userLike,2)
-		+poly(text,2)+poly(http,2)+poly(face,2))
+train = train[userForward+userComment+userLike!=0,]
 
+m = length(test$uid)
+test$f = rep(0, m)
+test$c = rep(0, m)
+test$l = rep(0, m)
 
-data = test[, 1:7]
+for (i in 1:center){
+	x = which(cl$cluster==i)
+	trainX = train[train$uid %in% x,]
+	attach(trainX)
+	lineF = lm(forward~userForward+userComment+userLike+http)
+	lineC = lm(comment~userForward+userComment+userLike+http)
+	lineL = lm(like~userForward+userComment+userLike)
 
+	detach(trainX)
 
-f = round( predict(lineF, data) )
-c = round( predict(lineC, data) )
-l = round( predict(lineL, data) )
+	testX = test[test$uid %in% x,]
+	f = predict(lineF, testX)
+	c = predict(lineC, testX)
+	l = predict(lineL, testX)
+
+	test[test$uid %in% x,]$f = f
+	test[test$uid %in% x,]$c = c
+	test[test$uid %in% x,]$l = l
+}
+
+f = round(test$f)
+c = round(test$c)
+l = round(test$l)
+
 
 f[f<0] = 0
 c[c<0] = 0
 l[l<0] = 0
+
+f[test$userForward+test$userComment+test$userLike==0] = 0
+c[test$userForward+test$userComment+test$userLike==0] = 0
+l[test$userForward+test$userComment+test$userLike==0] = 0
 
 ans = data.frame(test$userId, test$blogId, f, c, l)
 write.csv(ans, "ans.csv", row.names=F, quote=F)

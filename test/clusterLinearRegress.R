@@ -6,7 +6,7 @@ for(i in 1:3){
 	user[,i] =user[,i]/max(user[,i])
 }
 
-center = 3
+center =5
 cl = kmeans(user, center)
 
 train = read.csv("train.out")

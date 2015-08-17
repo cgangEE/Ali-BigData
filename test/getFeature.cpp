@@ -13,6 +13,8 @@
 char buf[BUF_SIZE];
 
 vector<Blog> userBlog[N+10];
+vector<Blog> testUserBlog[N+10];
+
 Blog statics[N+10];
 
 vector<Blog> train;
@@ -36,7 +38,7 @@ void outputUserInfo(){
 		int cnt = sz(userBlog[i]);
 		fprintf(fUser, "%d,%.8f,%.8lf,%.8lf\n",
 				cnt,
-				statics[i].forward*.1/cnt,
+				statics[i].forward*1./cnt,
 				statics[i].comment*1./cnt,
 				statics[i].like*1./cnt
 			   );
@@ -65,13 +67,15 @@ void readTest(){
 		int idx = stringToId[blog.userId];
 
 		int cnt = sz(userBlog[idx]);
+		int cnt2 = sz(testUserBlog[idx]);
+
 		Blog &stat = statics[idx];
 		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d,%s,%s,%s",
-				cnt,
+				cnt+cnt2,
 				idx,
-				stat.forward*1./cnt,
-				stat.comment*1./cnt,
-				stat.like*1./cnt,
+				cnt==0?0.:stat.forward*1./cnt,
+				cnt==0?0.:stat.comment*1./cnt,
+				cnt==0?0.:stat.like*1./cnt,
 				blog.text.len,
 				blog.text.http,
 				blog.text.face,
@@ -149,6 +153,7 @@ void readTrain(){
 	}
 
 
+	outputUserInfo();
 	//put test data into userBlog
 
 	rep(i, sz(test)){
@@ -158,7 +163,7 @@ void readTrain(){
 			userIdx = ++idx;
 			stringToId[blog.userId] = userIdx;
 		}
-		userBlog[userIdx].push_back(blog);
+		testUserBlog[userIdx].push_back(blog);
 		fprintf(fText, "%s", blog.text.s.c_str());
 	}
 
@@ -177,9 +182,10 @@ void readTrain(){
 
 		Blog &stat = statics[userIdx];
 		int cnt = userBlog[userIdx].size();
+		int cnt2 = testUserBlog[userIdx].size();
 
 		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d", 
-				cnt,
+				cnt+cnt2,
 				userIdx,
 				stat.forward*1./cnt,
 				stat.comment*1./cnt,
@@ -213,7 +219,6 @@ int main(){
 	readKeyWord();
 	readTrain();	
 	readTest();
-//	outputUserInfo();
 	return 0;
 }
 
