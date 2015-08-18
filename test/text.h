@@ -3,13 +3,10 @@
 #include "head.h"
 
 struct Text{
-	int len;
-	int http;
-	int face;
 	string s;
 
 	Text(){}
-	Text(string s);
+	Text(string s,int &len,int &http,int &face);
 	void debug();
 	int getCnt(string p);
 };

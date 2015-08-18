@@ -18,6 +18,7 @@
 #define repf(i, a, b) for (int i=(a); i<=(b); ++i)
 #define repd(i, a, b) for (int i=(a); i>=(b); --i)
 #define sz(a) ((int)(a).size())
+#define SQR(x) ((x)*(x))
 
 using namespace std;
 

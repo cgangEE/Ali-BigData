@@ -19,6 +19,7 @@ Blog statics[N+10];
 vector<Blog> train;
 vector<Blog> test;
 
+vector<string> keyWords;
 map<string, int> stringToId;
 
 int idx = 0;
@@ -33,15 +34,20 @@ void readTest(){
 	}
 
 
-	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,text,http,face,userId,blogId,date\n");
+	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,text,http,face,keyword,userId,blogId,date\n");
 	rep(i, sz(test)){
 		Blog &blog = test[i];
 		int idx = stringToId[blog.userId];
 		int cnt = sz(userBlog[idx]);
 		int cnt2 = sz(testUserBlog[idx]);
 
+
+		int keyword = 0;
+		rep(j, sz(keyWords))
+			keyword += blog.text.getCnt(keyWords[j]);
+
 		Blog &stat = statics[idx];
-		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%s,%s,%s\n",
+		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%s,%s,%s\n",
 				cnt+cnt2,
 				idx,
 				cnt==0?0.:stat.forward*1./cnt,
@@ -50,6 +56,7 @@ void readTest(){
 				blog.text.len,
 				blog.text.http,
 				blog.text.face,
+				keyword,
 				blog.userId.c_str(),
 				blog.blogId.c_str(),
 				blog.date.c_str()
@@ -68,14 +75,58 @@ bool outputUserInfo(){
 		return false;
 	}
 
-	fprintf(fUser, "cnt,forward,comment,like\n");
+	fprintf(fUser, "cnt,forward,comment,like,df,dc,dl,maxf,maxc,maxl,minf,minc,minl\n");
 	repf(i, 1, idx){
 		int cnt = sz(userBlog[i]);
-		fprintf(fUser, "%d,%.8lf,%.8lf,%.8lf\n", 
+
+		double forward = statics[i].forward*1./cnt;
+		double comment = statics[i].comment*1./cnt;
+		double like = statics[i].like*1./cnt;
+
+		double df = 0;
+		double dc = 0;
+		double dl = 0;
+
+		int maxf =0;
+		int maxc =0;
+		int maxl =0;
+
+		int minf =INT_MAX;
+		int minc =INT_MAX;
+		int minl =INT_MAX;
+
+		rep(j, sz(userBlog[i])){
+			df += SQR(userBlog[i][j].forward - forward);
+			dc += SQR(userBlog[i][j].comment - comment);
+			dl += SQR(userBlog[i][j].like - like);
+			
+			maxf = max(maxf, userBlog[i][j].forward);
+			maxc = max(maxc, userBlog[i][j].comment);
+			maxl = max(maxl, userBlog[i][j].like);
+
+			minf = min(minf, userBlog[i][j].forward);
+			minc = min(minc, userBlog[i][j].comment);
+			minl = min(minl, userBlog[i][j].like);
+		}
+
+		df /= cnt;
+		dc /= cnt;
+		dl /= cnt;
+
+		fprintf(fUser, "%d,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d\n", 
 				cnt,
-				statics[i].forward*1./cnt,
-				statics[i].comment*1./cnt,
-				statics[i].like*1./cnt
+				forward,
+				comment,
+				like,
+				df,
+				dc,
+				dl,
+				maxf,
+				maxc,
+				maxl,
+				minf,
+				minc,
+				minl
 			   );
 	}
 
@@ -147,7 +198,7 @@ void readTrain(){
 
 	// output features of each train data
 
-	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,forward,comment,like,text,http,face\n");
+	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,forward,comment,like,text,http,face,keyword\n");
 	rep(i, sz(train)){
 		Blog &blog = train[i];
 		int userIdx = stringToId[blog.userId];
@@ -155,7 +206,11 @@ void readTrain(){
 		int cnt = userBlog[userIdx].size();
 		int cnt2 = testUserBlog[userIdx].size();
 
-		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d\n", 
+		int keyword = 0;
+		rep(j, sz(keyWords))
+			keyword += blog.text.getCnt(keyWords[j]);
+
+		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d,%d\n", 
 				cnt+cnt2,
 				userIdx,
 				stat.forward*1./cnt,
@@ -166,12 +221,28 @@ void readTrain(){
 				blog.like,
 				blog.text.len,
 				blog.text.http,
-				blog.text.face);
+				blog.text.face,
+				keyword
+				);
 	}
 	fclose(foutput);
 }
 
+
+void readKeyWord(){
+	string fileName = "keyWord.out";
+	FILE *file = fopen(fileName.c_str(), "r");
+
+	char tmp[100];
+
+	while (fgets(buf, BUF_SIZE, file)){
+		sscanf(buf, "%s", tmp);
+		keyWords.push_back(tmp);
+	}
+}
+
 int main(){
+	readKeyWord();
 	srand(time(NULL));
 	readTrain();	
 	readTest();

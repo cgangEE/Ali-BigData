@@ -27,7 +27,7 @@ int getFace(string &s){
 	return ret;
 }
 
-Text::Text(string s):s(s){
+Text::Text(string s, int &len, int &http, int &face):s(s){
 	len = sz(s);
 	http = getHttp(s);	
 	face = getFace(s);

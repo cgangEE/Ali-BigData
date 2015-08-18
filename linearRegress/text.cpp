@@ -35,3 +35,13 @@ Text::Text(string s):s(s){
 
 void Text::debug(){
 }
+
+int Text::getCnt(string p){
+	int ret = 0;
+	int pos = s.find(p, 0);
+	while (pos!=-1){
+		++ret;
+		pos = s.find(p, pos+sz(p));
+	}
+	return ret;
+}

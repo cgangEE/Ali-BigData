@@ -11,14 +11,19 @@ struct Blog{
 	int forward;
 	int comment;
 	int like;
+	int len;
+	int http;
+	int face;
 	Text text;
 
 	Blog(){}
-	Blog(int forward, int comment, int like):
-		forward(forward),comment(comment),like(like){}
+	Blog(int forward, int comment, int like, int len, int http, int face):
+		forward(forward),comment(comment),like(like),
+			len(len),http(http),face(face){}
 
 	Blog operator +(const Blog&b)const{
-		return Blog(forward+b.forward, comment+b.comment, like+b.like);
+		return Blog(forward+b.forward, comment+b.comment, like+b.like,
+				len+b.len, http+b.http, face+b.face);
 
 	}
 
@@ -49,7 +54,7 @@ struct Blog{
 				else if (idx==1) blogId = string(buf);
 				else if (idx==2){ 
 					date = string(buf);
-					text = Text(string(s+i+1));
+					text = Text(string(s+i+1), this->len, http, face);
 					break;
 				}
 
@@ -77,7 +82,7 @@ struct Blog{
 				else if (idx==4) comment = atoi(buf);
 				else if (idx==5){
 					like = atoi(buf);
-					text = Text(string(s+i+1));
+					text = Text(string(s+i+1), this->len, http, face);
 					break;
 				}
 

@@ -10,6 +10,7 @@ struct Text{
 
 	Text(){}
 	Text(string s);
+	int getCnt(string p);
 	void debug();
 };
 
