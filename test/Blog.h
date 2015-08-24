@@ -16,7 +16,10 @@ struct Blog{
 	int face;
 	Text text;
 
-	Blog(){}
+	Blog(){
+		forward=comment=like=0;
+	}
+
 	Blog(int forward, int comment, int like, int len, int http, int face):
 		forward(forward),comment(comment),like(like),
 			len(len),http(http),face(face){}
@@ -25,6 +28,10 @@ struct Blog{
 		return Blog(forward+b.forward, comment+b.comment, like+b.like,
 				len+b.len, http+b.http, face+b.face);
 
+	}
+
+	bool operator <(const Blog&b)const{
+		return date<b.date;
 	}
 
 	void out(){

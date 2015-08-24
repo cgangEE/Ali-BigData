@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 user = read.csv("user.out")
-user = user[,c(2:13)]
+user = user[,-1]
 
 lenUser = length(user)
 cntUser = dim(user)[1]
@@ -31,7 +31,7 @@ for (i in 1:center){
 	attach(trainX)
 	lineF = lm(forward~userForward+userComment+userLike+http)
 	lineC = lm(comment~userForward+userComment+userLike+http)
-	lineL = lm(like~userForward+userComment+userLike+keyword)
+	lineL = lm(like~userForward+userComment+userLike)
 
 	detach(trainX)
 
@@ -51,9 +51,9 @@ if (T){
 testX =test[test$uid > cntUser,]
 
 attach(train)
-lineF = lm(forward~cnt+text+http+keyword+face)
-lineC = lm(comment~cnt+text+http+keyword+face)
-lineL = lm(like~cnt+text+http+keyword+face)
+lineF = lm(forward~cnt+text+http+face)
+lineC = lm(comment~cnt+text+http+face)
+lineL = lm(like~cnt+text+http+face)
 detach(train)
 	
 f = predict(lineF, testX)
