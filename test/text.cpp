@@ -27,13 +27,31 @@ int getFace(string &s){
 	return ret;
 }
 
-Text::Text(string s, int &len, int &http, int &face):s(s){
-	len = sz(s);
+Text::Text(string s, int &total, int &digit, int &chinese, int &english, int &http, int &face):s(s){
+	total = 0;
+	digit = 0;
+	chinese = 0;
+	english = 0;
+
+	rep(i, sz(s)){
+		if (isdigit(s[i])){
+		   	++digit;
+			++total;
+		}
+		else if (isalpha(s[i])){
+		   	++english;
+			++total;
+		}
+		else if ( (s[i]&(1<<7)) && ( (s[i]>>6) == -1)){
+			++ chinese;
+			++ total;
+		}
+		
+		
+	}
+
 	http = getHttp(s);	
 	face = getFace(s);
-}
-
-void Text::debug(){
 }
 
 int Text::getCnt(string p){

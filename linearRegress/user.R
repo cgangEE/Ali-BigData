@@ -2,7 +2,6 @@
 train = read.csv("train.out")
 test = read.csv("test.out")
 
-
 m = max(train$uid)
 l = length(test$uid)
 
@@ -36,23 +35,7 @@ c[c<0] = 0
 l[l<0] = 0
 
 
+ans = data.frame(test$userId, test$blogId, f, c, l)
+write.csv(ans, "ans.csv", row.names=F, quote=F)
 
-df = abs(f-test$forward)/(test$forward+5)
-dc = abs(c-test$comment)/(test$comment+3)
-dl = abs(l-test$like)/(test$like+3)
-
-prec = 1-0.5*df-0.25*dc-0.25*dl
-
-count = test$forward+test$comment+test$like
-count[count>100]=100
-
-sgn=function(prec){
-	ret=1:length(prec)
-	ret[prec<=0]=0
-	ret[prec>0]=1
-	return(ret)
-}
-
-eval = sum((count+1)*sgn(prec-0.8))/sum(count+1)
-print(eval)
 

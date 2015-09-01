@@ -6,6 +6,8 @@ lenUser = length(user)
 cntUser = dim(user)[1]
 
 for(i in 1:lenUser){
+	if (max(user[,i]) == 0)
+		next
 	user[,i] =user[,i]/max(user[,i])
 }
 
@@ -87,6 +89,8 @@ dl = abs(l-test$like)/(test$like+3)
 
 prec = 1-0.5*df-0.25*dc-0.25*dl
 
+test$prec = prec
+
 count = test$forward+test$comment+test$like
 count[count>100]=100
 
@@ -97,5 +101,10 @@ sgn=function(prec){
 	return(ret)
 }
 
+flag = sgn(prec - 0.8)
+r = test[flag==1,]
+w = test[flag==0,]
+
 eval = sum((count+1)*sgn(prec-0.8))/sum(count+1)
 print(eval)
+

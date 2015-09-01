@@ -1,8 +1,8 @@
 submit.txt: ans.csv
 	awk 'BEGIN{FS=","} NR!=1  {print $$1 "\t" $$2 "\t" $$3 "," $$4 "," $$5}' ans.csv > submit.txt
 
-ans.csv: test.out train.out linearRegress.R
-	./linearRegress.R
+ans.csv: test.out train.out user.R
+	./user.R
 
 test.out train.out: getFeature
 	./getFeature

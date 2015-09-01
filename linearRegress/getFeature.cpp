@@ -34,20 +34,21 @@ void readTest(){
 	}
 
 
-	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,text,http,face,keyword,userId,blogId,date\n");
+	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,text,http,face,userId,blogId,date");
+
+	rep(j, sz(keyWords))
+		fprintf(foutput, ",keyword%d", j);
+	fprintf(foutput, "\n");
+
+
 	rep(i, sz(test)){
 		Blog &blog = test[i];
 		int idx = stringToId[blog.userId];
 		int cnt = sz(userBlog[idx]);
 		int cnt2 = sz(testUserBlog[idx]);
 
-
-		int keyword = 0;
-		rep(j, sz(keyWords))
-			keyword += blog.text.getCnt(keyWords[j]);
-
 		Blog &stat = statics[idx];
-		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%s,%s,%s\n",
+		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%s,%s,%s",
 				cnt+cnt2,
 				idx,
 				cnt==0?0.:stat.forward*1./cnt,
@@ -56,11 +57,17 @@ void readTest(){
 				blog.text.len,
 				blog.text.http,
 				blog.text.face,
-				keyword,
 				blog.userId.c_str(),
 				blog.blogId.c_str(),
 				blog.date.c_str()
 				);
+
+		rep(j, sz(keyWords)){
+			fprintf(foutput, ",%d", blog.text.getCnt(keyWords[j]));
+		}
+
+		fprintf(foutput, "\n");
+
 	}
 
 	fclose(foutput);
@@ -198,7 +205,13 @@ void readTrain(){
 
 	// output features of each train data
 
-	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,forward,comment,like,text,http,face,keyword\n");
+	fprintf(foutput, "cnt,uid,userForward,userComment,userLike,forward,comment,like,text,http,face");
+
+	rep(j, sz(keyWords))
+		fprintf(foutput, ",keyword%d", j);
+	fprintf(foutput, "\n");
+
+
 	rep(i, sz(train)){
 		Blog &blog = train[i];
 		int userIdx = stringToId[blog.userId];
@@ -206,11 +219,7 @@ void readTrain(){
 		int cnt = userBlog[userIdx].size();
 		int cnt2 = testUserBlog[userIdx].size();
 
-		int keyword = 0;
-		rep(j, sz(keyWords))
-			keyword += blog.text.getCnt(keyWords[j]);
-
-		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d,%d\n", 
+		fprintf(foutput, "%d,%d,%.8lf,%.8lf,%.8lf,%d,%d,%d,%d,%d,%d", 
 				cnt+cnt2,
 				userIdx,
 				stat.forward*1./cnt,
@@ -221,9 +230,14 @@ void readTrain(){
 				blog.like,
 				blog.text.len,
 				blog.text.http,
-				blog.text.face,
-				keyword
+				blog.text.face
 				);
+
+		rep(j, sz(keyWords)){
+			fprintf(foutput, ",%d", blog.text.getCnt(keyWords[j]));
+		}
+
+		fprintf(foutput, "\n");
 	}
 	fclose(foutput);
 }

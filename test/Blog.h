@@ -11,7 +11,12 @@ struct Blog{
 	int forward;
 	int comment;
 	int like;
-	int len;
+
+	int total;
+	int digit;
+	int chinese;
+	int english;
+
 	int http;
 	int face;
 	Text text;
@@ -20,14 +25,11 @@ struct Blog{
 		forward=comment=like=0;
 	}
 
-	Blog(int forward, int comment, int like, int len, int http, int face):
-		forward(forward),comment(comment),like(like),
-			len(len),http(http),face(face){}
+	Blog(int forward, int comment, int like):
+		forward(forward),comment(comment),like(like){}
 
 	Blog operator +(const Blog&b)const{
-		return Blog(forward+b.forward, comment+b.comment, like+b.like,
-				len+b.len, http+b.http, face+b.face);
-
+		return Blog(forward+b.forward, comment+b.comment, like+b.like);
 	}
 
 	bool operator <(const Blog&b)const{
@@ -61,7 +63,8 @@ struct Blog{
 				else if (idx==1) blogId = string(buf);
 				else if (idx==2){ 
 					date = string(buf);
-					text = Text(string(s+i+1), this->len, http, face);
+					text = Text(string(s+i+1), 
+							total, digit, chinese, english, http, face);
 					break;
 				}
 
@@ -89,7 +92,8 @@ struct Blog{
 				else if (idx==4) comment = atoi(buf);
 				else if (idx==5){
 					like = atoi(buf);
-					text = Text(string(s+i+1), this->len, http, face);
+					text = Text(string(s+i+1), 
+							total, digit, chinese, english, http, face);
 					break;
 				}
 

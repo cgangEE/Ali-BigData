@@ -9,7 +9,7 @@ for (i in 1:lenUser){
 	user[,i] = user[,i] / max(user[,i])
 }
 
-center = 5
+center = 4
 cl = kmeans(user, center)
 
 
@@ -47,7 +47,7 @@ for (i in 1:center){
 }
 
 
-if (T){
+if (F){
 testX =test[test$uid > cntUser,]
 
 attach(train)

@@ -3,4 +3,5 @@
 *.csv
 *.html
 *.swp
-*DS_Store
+*.tmp
+.DS_Store

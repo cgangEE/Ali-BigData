@@ -6,8 +6,7 @@ struct Text{
 	string s;
 
 	Text(){}
-	Text(string s,int &len,int &http,int &face);
-	void debug();
+	Text(string s, int &total, int &digit, int &chinese, int &english, int &http,int &face);
 	int getCnt(string p);
 };
 
