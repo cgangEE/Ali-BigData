@@ -4,7 +4,7 @@ train = read.csv("train.out");
 train = train[train$userForward+train$userComment+train$userLike!=0,]
 
 attach(train)
-lineF = lm(forward~cnt+userForward+userComment+userLike+text, train);
+lineF = lm(forward~cnt+userForward+userComment+userLike+keyword0+keyword1, train);
 lineC = lm(comment~cnt+userForward+userComment+userLike+text, train);
 lineL = lm(like~cnt+userForward+userComment+userLike+text+http, train);
 

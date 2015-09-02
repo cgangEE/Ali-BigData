@@ -4,3 +4,5 @@
 ###clusterLinearRegress
 	0.3725957
 
+###user
+	0.3774198
